@@ -90,6 +90,7 @@ function addTodo() {
         // console.log("add todo", editTodoIndex);
         // const titleValue = document.getElementById("title")?.value;
         // const descriptionValue = document.getElementById("description")?.value;
+        
         // titleInput.value = "";
         // descriptionInput.value = "";
         // OR
