@@ -1,6 +1,7 @@
 let todos = [];
 let selectedTodo = null;
 let editTodoIndex;
+const deletedTodosIndexes = [];
 
 const titleInput = document.getElementById("title");
 const descriptionInput = document.getElementById("description");
@@ -45,11 +46,35 @@ function editTodoItem(index) {
     console.log("edit Todo item: ", todos, index, titleInput.value, descriptionInput.value);
 }
 
-function onSelectStatus() {
+function onChangeSortOrder() {
+    // Get the select element
+    const selectElement = document.getElementById('todos-select-sort-order-vise');
+
+    // Get the selected option
+    const selectedOption = selectElement.options[selectElement.selectedIndex];
+
+    // Get the value of the selected option
+    const selectedValue = selectedOption.value;
+    const copiedTodos = [...todos];
+    console.log({ selectedValue, todos });
+    if (selectedValue === "createdAt") {
+        reRenderUI();
+    } else if (selectedValue === "sortAToZ") {
+        const sortAToZTodos = copiedTodos.sort((a, b) => a.title.localeCompare(b.title));
+        // console.log({ sortAToZTodos });
+        reRenderUI(false, sortAToZTodos);
+
+    } else if (selectedValue === "sortZToA") {
+        const sortZToATodos = copiedTodos.sort((a, b) => b.title.localeCompare(a.title));
+        // console.log({ sortZToATodos });
+        reRenderUI(false, sortZToATodos);
+
+    }
+
 
 }
 
-function onSelectStatus() {
+function onChangeStatus() {
     // Get the select element
     const selectElement = document.getElementById('todos-select-status-vise');
 
@@ -90,7 +115,7 @@ function addTodo() {
         // console.log("add todo", editTodoIndex);
         // const titleValue = document.getElementById("title")?.value;
         // const descriptionValue = document.getElementById("description")?.value;
-        
+
         // titleInput.value = "";
         // descriptionInput.value = "";
         // OR
@@ -123,7 +148,8 @@ function addTodo() {
             isCompleted: false,
         };
 
-        todos.push(todo);
+        // use unshift array method here to add item at the beginning instead of end  
+        todos.unshift(todo);
 
         // localStorage.setItem("todos", JSON.stringify(todos));
         setTodosToLocalStorage(todos);
@@ -172,9 +198,12 @@ function showTodos(filteredTodos) {
             // const stringifyTodo = JSON.stringify(todo);
             li.innerHTML = `
             <div class="d-flex align-items-center justify-content-between">
-           
-            <h3 style="${todo.isCompleted && "text-decoration: line-through;"}">${index + 1}: ${todo.title}</h3>
-        
+            <div class="d-flex align-items-center">   
+            <div class="form-check">
+            <input class="form-check-input" type="checkbox" onchange="pushSelectedTodoItemIndexInArray(${index})">
+            </div> 
+            <h3 style="${todo.isCompleted ? "text-decoration: line-through;" : ""}" class="m-0">${index + 1}: ${todo.title}</h3>
+            </div>
             <div>
             <button class="btn btn-sm btn-success ${todo.isCompleted ? "done" : "undone"}" onclick="markTodoAsDoneOrUndone(${index}, this)">Mark as ${todo.isCompleted ? "undone" : "done"}</button>
             <button class="btn btn-sm btn-danger mx-2" onclick="deleteTodoItem(${index})">Delete</button>
@@ -197,6 +226,17 @@ function showTodos(filteredTodos) {
         ul.innerHTML = "<h3>No todos found!</h3>";
     }
 
+}
+
+function pushSelectedTodoItemIndexInArray(index) {
+    deletedTodosIndexes.push(index);
+    const deleteSelectedTodosButton = document.getElementById("deleteSelectedTodosBtn");
+    if (deletedTodosIndexes.length > 0) {
+
+        deleteSelectedTodosButton.textContent = `Delete Selected Todos (${deletedTodosIndexes.length})`
+        deleteSelectedTodosButton.style.display = "block";
+
+    }
 }
 
 function markTodoAsDoneOrUndone(selectedIndex, button) {
@@ -260,6 +300,17 @@ function deleteTodoItem(index) {
     }
 }
 
+function deleteSelectedTodos() {
+    const areYouSure = confirm(`Are you sure you want to delete all selected todos (${deletedTodosIndexes.length})?`);
+    console.log({ areYouSure, todos });
+
+    if (areYouSure) {
+        // Remove items with specified index
+        let remainingTodos = todos.filter((todo, index) => !deletedTodosIndexes.includes(index));
+        setTodosToLocalStorage(remainingTodos);
+        reRenderUI();
+    }
+}
 
 function deleteAllTodos() {
     const areYouSure = confirm("Are you sure to delete all todos?");
@@ -291,7 +342,9 @@ function getValueFromLocalStorageAndSetIntoTodosArray() {
     // }
 
     // OR  
-    console.log({ todosFromLocalStorage });
+
+    // console.log({ todosFromLocalStorage, parsedTodos: JSON.parse(todosFromLocalStorage) });
+
     todos = todosFromLocalStorage ? JSON.parse(todosFromLocalStorage) : [];
 }
 
@@ -319,6 +372,7 @@ function clearInputFields() {
     titleInput.value = "";
     descriptionInput.value = "";
 }
+
 function searchTodos() {
     const searchTodosInput = document.getElementById("search-todos-input")
     // console.log("searchTodos: ", searchTodosInput, searchTodosInput.value);

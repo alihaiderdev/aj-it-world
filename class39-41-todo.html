@@ -80,6 +80,7 @@
             <a class="nav-link disabled" aria-disabled="true">Disabled</a>
           </li> -->
         </ul>
+        <button type="button" id="deleteSelectedTodosBtn" class="btn btn-danger mx-3" style="display: none;" onclick="deleteSelectedTodos()"></button>
         <strong id="todos-count"></strong>
         <button type="button" id="deleteAllTodosBtn" class="btn btn-danger mx-3" onclick="deleteAllTodos()">Delete All
           Todos</button>
@@ -103,12 +104,21 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-center">
       <h1>Todos</h1>
-      <select class="form-select" id="todos-select-status-vise" style="width: fit-content;" onchange="onSelectStatus()">
-        <option>Select Todos Status (Done/Undone)</option>
-        <option selected value="all">All</option>
-        <option value="done">Done</option>
-        <option value="undone">Undone</option>
-      </select>
+      <div class="d-flex align-items-center gap-3">
+        <select class="form-select" id="todos-select-sort-order-vise" style="width: fit-content;"
+          onchange="onChangeSortOrder()">
+          <option selected value="createdAt">Created At</option>
+          <option value="sortAToZ">Sort (A-Z)</option>
+          <option value="sortZToA">Sort (Z-A)</option>
+        </select>
+        <select class="form-select" id="todos-select-status-vise" style="width: fit-content;"
+          onchange="onChangeStatus()">
+          <option>Select Todos Status (Done/Undone)</option>
+          <option selected value="all">All</option>
+          <option value="done">Done</option>
+          <option value="undone">Undone</option>
+        </select>
+      </div>
     </div>
     <ol id="todo-list"></ol>
     <!-- <p>Hello this is our project of javascript.</p> -->
