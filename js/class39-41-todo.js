@@ -108,6 +108,7 @@ function onChangeStatus() {
 }
 
 function addTodo() {
+    console.log({ deletedTodosIndexes });
     if (editTodoIndex) {
         // console.log("edit todo", editTodoIndex);
         editTodoItem(editTodoIndex);
@@ -200,7 +201,7 @@ function showTodos(filteredTodos) {
             <div class="d-flex align-items-center justify-content-between">
             <div class="d-flex align-items-center">   
             <div class="form-check">
-            <input class="form-check-input" type="checkbox" onchange="pushSelectedTodoItemIndexInArray(${index})">
+            <input class="form-check-input checkbox" type="checkbox" onchange="pushSelectedTodoItemIndexInArray(${index},this)">
             </div> 
             <h3 style="${todo.isCompleted ? "text-decoration: line-through;" : ""}" class="m-0">${index + 1}: ${todo.title}</h3>
             </div>
@@ -228,16 +229,27 @@ function showTodos(filteredTodos) {
 
 }
 
-function pushSelectedTodoItemIndexInArray(index) {
-    deletedTodosIndexes.push(index);
+function pushSelectedTodoItemIndexInArray(index, currentCheckboxElement) {
+    if (currentCheckboxElement.checked) {
+        deletedTodosIndexes.push(index);
+    }
+    else {
+        deletedTodosIndexes.splice(index, 1);
+    }
+
     const deleteSelectedTodosButton = document.getElementById("deleteSelectedTodosBtn");
     if (deletedTodosIndexes.length > 0) {
 
         deleteSelectedTodosButton.textContent = `Delete Selected Todos (${deletedTodosIndexes.length})`
         deleteSelectedTodosButton.style.display = "block";
 
+    } else {
+        deleteSelectedTodosButton.style.display = "none";
     }
+    console.log({ deletedTodosIndexes });
+
 }
+
 
 function markTodoAsDoneOrUndone(selectedIndex, button) {
     console.log("markTodoAsDoneOrUndone: ", selectedIndex,
